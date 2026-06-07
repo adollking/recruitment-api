@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { CandidatesModule } from './candidates/candidates.module';
 import { VacanciesModule } from './vacancies/vacancies.module';
 import { RankingModule } from './ranking/ranking.module';
+import { AuthModule } from './auth/auth.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { Candidate } from './candidates/candidate.entity';
 import { Vacancy } from './vacancies/vacancy.entity';
 import { Criteria } from './vacancies/criteria/criteria.entity';
@@ -37,11 +39,16 @@ import { SalaryCriteria } from './vacancies/criteria/salary-criteria.entity';
     CandidatesModule,
     VacanciesModule,
     RankingModule,
+    AuthModule,
   ],
   providers: [
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
     },
   ],
 })
