@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
@@ -31,8 +32,11 @@ export class VacanciesController {
   @Get()
   @ApiOperation({ summary: 'Get all vacancies' })
   @ApiResponse({ status: 200, type: [Vacancy] })
-  findAll(): Promise<Vacancy[]> {
-    return this.vacanciesService.findAll();
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<Vacancy[]> {
+    return this.vacanciesService.findAll(page, limit);
   }
 
   @Get(':id')

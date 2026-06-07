@@ -95,11 +95,15 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/candidates",
+              "raw": "{{baseUrl}}/candidates?page=1&limit=10",
               "host": ["{{baseUrl}}"],
-              "path": ["candidates"]
+              "path": ["candidates"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
             },
-            "description": "Retrieve all candidates ordered by creation date (newest first).\n\n**Responses:**\n- `200 OK` — Array of candidate objects"
+            "description": "Retrieve all candidates ordered by creation date (newest first). Supports pagination.\n\n**Query Parameters:**\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| page | integer | 1 | Page number |\n| limit | integer | 10 | Items per page |\n\n**Responses:**\n- `200 OK` — Array of candidate objects"
           },
           "response": [
             {
@@ -274,11 +278,15 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/vacancies",
+              "raw": "{{baseUrl}}/vacancies?page=1&limit=10",
               "host": ["{{baseUrl}}"],
-              "path": ["vacancies"]
+              "path": ["vacancies"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
             },
-            "description": "Retrieve all vacancies with their criteria, ordered by creation date (newest first).\n\n**Responses:**\n- `200 OK` — Array of vacancy objects with criteria"
+            "description": "Retrieve all vacancies with their criteria, ordered by creation date (newest first). Supports pagination.\n\n**Query Parameters:**\n| Parameter | Type | Default | Description |\n|-----------|------|---------|-------------|\n| page | integer | 1 | Page number |\n| limit | integer | 10 | Items per page |\n\n**Responses:**\n- `200 OK` — Array of vacancy objects with criteria"
           },
           "response": [
             {

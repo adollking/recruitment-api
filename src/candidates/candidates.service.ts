@@ -33,8 +33,12 @@ export class CandidatesService {
     return saved;
   }
 
-  async findAll(): Promise<Candidate[]> {
-    return this.candidateRepo.find({ order: { createdAt: 'DESC' } });
+  async findAll(page: number = 1, limit: number = 10): Promise<Candidate[]> {
+    return this.candidateRepo.find({
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
   }
 
   async findOne(id: string): Promise<Candidate> {

@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
@@ -31,8 +32,11 @@ export class CandidatesController {
   @Get()
   @ApiOperation({ summary: 'Get all candidates' })
   @ApiResponse({ status: 200, description: 'List of candidates', type: [Candidate] })
-  findAll(): Promise<Candidate[]> {
-    return this.candidatesService.findAll();
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<Candidate[]> {
+    return this.candidatesService.findAll(page, limit);
   }
 
   @Get(':id')

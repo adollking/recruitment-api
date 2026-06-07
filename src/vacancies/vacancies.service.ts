@@ -69,8 +69,12 @@ export class VacanciesService {
     return this.findOne(savedVacancy.id);
   }
 
-  async findAll(): Promise<Vacancy[]> {
-    return this.vacancyRepo.find({ order: { createdAt: 'DESC' } });
+  async findAll(page: number = 1, limit: number = 10): Promise<Vacancy[]> {
+    return this.vacancyRepo.find({
+      order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
   }
 
   async findOne(id: string): Promise<Vacancy> {
