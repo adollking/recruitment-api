@@ -29,9 +29,9 @@ export class EvaluatorRegistry implements OnModuleInit {
   }
 
   evaluate(candidate: Candidate, criteria: Criteria): boolean {
-    const evaluator = this.evaluators.get(criteria.criteriaType);
+    const evaluator = this.evaluators.get((criteria as any).criteriaType);
     if (!evaluator) {
-      this.logger.warn(`No evaluator found for criteria type: ${criteria.criteriaType}`);
+      this.logger.warn(`No evaluator found for criteria type: ${(criteria as any).criteriaType}`);
       return false;
     }
     return evaluator.evaluate(candidate, criteria as any);

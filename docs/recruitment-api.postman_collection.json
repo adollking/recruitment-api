@@ -1,0 +1,462 @@
+{
+  "info": {
+    "_postman_id": "recruitment-api-collection",
+    "name": "Recruitment API",
+    "description": "Recruitment API collection for managing candidates, vacancies, and ranking.\n\nBase URL: `http://localhost:3000`\n\nSwagger UI: `http://localhost:3000/api/docs`\n\n## Modules\n- **Candidates** — CRUD for candidate profiles\n- **Vacancies** — CRUD for job openings with weighted criteria\n- **Ranking** — Score and rank candidates against a vacancy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "candidateId",
+      "value": "",
+      "type": "string",
+      "description": "Set after creating a candidate"
+    },
+    {
+      "key": "vacancyId",
+      "value": "",
+      "type": "string",
+      "description": "Set after creating a vacancy"
+    }
+  ],
+  "item": [
+    {
+      "name": "Candidates",
+      "description": "Manage candidate profiles",
+      "item": [
+        {
+          "name": "Create Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/candidates",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidates"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"dateOfBirth\": \"1995-03-15\",\n  \"gender\": \"male\",\n  \"currentSalary\": 8000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new candidate.\n\n**Request Body:**\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| name | string | Yes | Full name |\n| email | string | Yes | Must be unique |\n| dateOfBirth | string | Yes | ISO 8601 date (YYYY-MM-DD) |\n| gender | string | Yes | `male` or `female` |\n| currentSalary | number | Yes | Must be ≥ 0 |\n\n**Responses:**\n- `201 Created` — Candidate created successfully\n- `409 Conflict` — Email already registered\n- `400 Bad Request` — Validation error"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/candidates", "host": ["{{baseUrl}}"], "path": ["candidates"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"dateOfBirth\": \"1995-03-15\",\n  \"gender\": \"male\",\n  \"currentSalary\": 8000000\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"dateOfBirth\": \"1995-03-15T00:00:00.000Z\",\n  \"gender\": \"male\",\n  \"currentSalary\": 8000000,\n  \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n  \"updatedAt\": \"2026-06-06T08:00:00.000Z\"\n}"
+            },
+            {
+              "name": "409 Conflict — Email taken",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/candidates", "host": ["{{baseUrl}}"], "path": ["candidates"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"dateOfBirth\": \"1993-07-20\",\n  \"gender\": \"female\",\n  \"currentSalary\": 7500000\n}"
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"statusCode\": 409,\n  \"message\": \"Email john.doe@example.com is already registered\",\n  \"error\": \"Conflict\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Candidates",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/candidates",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidates"]
+            },
+            "description": "Retrieve all candidates ordered by creation date (newest first).\n\n**Responses:**\n- `200 OK` — Array of candidate objects"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/candidates", "host": ["{{baseUrl}}"], "path": ["candidates"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"dateOfBirth\": \"1995-03-15T00:00:00.000Z\",\n    \"gender\": \"male\",\n    \"currentSalary\": 8000000,\n    \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n    \"updatedAt\": \"2026-06-06T08:00:00.000Z\"\n  },\n  {\n    \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n    \"name\": \"Jane Smith\",\n    \"email\": \"jane.smith@example.com\",\n    \"dateOfBirth\": \"1993-07-20T00:00:00.000Z\",\n    \"gender\": \"female\",\n    \"currentSalary\": 7500000,\n    \"createdAt\": \"2026-06-06T07:00:00.000Z\",\n    \"updatedAt\": \"2026-06-06T07:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Candidate by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/candidates/{{candidateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidates", "{{candidateId}}"]
+            },
+            "description": "Retrieve a single candidate by UUID.\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| id | UUID | Candidate ID |\n\n**Responses:**\n- `200 OK` — Candidate object\n- `404 Not Found` — Candidate not found"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/candidates/{{candidateId}}", "host": ["{{baseUrl}}"], "path": ["candidates", "{{candidateId}}"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"dateOfBirth\": \"1995-03-15T00:00:00.000Z\",\n  \"gender\": \"male\",\n  \"currentSalary\": 8000000,\n  \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n  \"updatedAt\": \"2026-06-06T08:00:00.000Z\"\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/candidates/non-existent-id", "host": ["{{baseUrl}}"], "path": ["candidates", "non-existent-id"] }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Candidate not found\",\n  \"error\": \"Not Found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Candidate",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/candidates/{{candidateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidates", "{{candidateId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentSalary\": 9000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update a candidate. All fields are optional — only provided fields are updated.\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| id | UUID | Candidate ID |\n\n**Request Body** (all fields optional):\n| Field | Type | Notes |\n|-------|------|-------|\n| name | string | Full name |\n| email | string | Must be unique |\n| dateOfBirth | string | ISO 8601 date |\n| gender | string | `male` or `female` |\n| currentSalary | number | Must be ≥ 0 |\n\n**Responses:**\n- `200 OK` — Updated candidate\n- `404 Not Found` — Candidate not found\n- `409 Conflict` — Email already taken"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/candidates/{{candidateId}}", "host": ["{{baseUrl}}"], "path": ["candidates", "{{candidateId}}"] },
+                "body": { "mode": "raw", "raw": "{\n  \"currentSalary\": 9000000\n}" }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"dateOfBirth\": \"1995-03-15T00:00:00.000Z\",\n  \"gender\": \"male\",\n  \"currentSalary\": 9000000,\n  \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n  \"updatedAt\": \"2026-06-06T09:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Candidate",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/candidates/{{candidateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["candidates", "{{candidateId}}"]
+            },
+            "description": "Delete a candidate by UUID.\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| id | UUID | Candidate ID |\n\n**Responses:**\n- `204 No Content` — Deleted successfully\n- `404 Not Found` — Candidate not found"
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "url": { "raw": "{{baseUrl}}/candidates/{{candidateId}}", "host": ["{{baseUrl}}"], "path": ["candidates", "{{candidateId}}"] }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Vacancies",
+      "description": "Manage job vacancies and their weighted criteria",
+      "item": [
+        {
+          "name": "Create Vacancy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vacancies",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacancies"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Software Engineer\",\n  \"criteria\": [\n    {\n      \"type\": \"age\",\n      \"weightScore\": 2,\n      \"minAge\": 22,\n      \"maxAge\": 35\n    },\n    {\n      \"type\": \"gender\",\n      \"weightScore\": 1,\n      \"gender\": \"any\"\n    },\n    {\n      \"type\": \"salary\",\n      \"weightScore\": 3,\n      \"minSalary\": 5000000,\n      \"maxSalary\": 10000000\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new vacancy with weighted criteria.\n\n**Request Body:**\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| name | string | Yes | Vacancy title |\n| criteria | array | No | List of evaluation criteria |\n\n**Criteria Object:**\n| Field | Type | Required | Notes |\n|-------|------|----------|-------|\n| type | string | Yes | `age`, `gender`, or `salary` |\n| weightScore | integer | No | Score awarded when matched (default: 1, min: 1) |\n| minAge | integer | When type=age | Minimum candidate age |\n| maxAge | integer | When type=age | Maximum candidate age |\n| gender | string | When type=gender | `male`, `female`, or `any` |\n| minSalary | number | When type=salary | Minimum candidate salary |\n| maxSalary | number | When type=salary | Maximum candidate salary |\n\n**Responses:**\n- `201 Created` — Vacancy created\n- `400 Bad Request` — Validation error"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/vacancies", "host": ["{{baseUrl}}"], "path": ["vacancies"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Software Engineer\",\n  \"criteria\": [\n    { \"type\": \"age\", \"weightScore\": 2, \"minAge\": 22, \"maxAge\": 35 },\n    { \"type\": \"gender\", \"weightScore\": 1, \"gender\": \"any\" },\n    { \"type\": \"salary\", \"weightScore\": 3, \"minSalary\": 5000000, \"maxSalary\": 10000000 }\n  ]\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n  \"name\": \"Software Engineer\",\n  \"criteria\": [\n    {\n      \"id\": \"d4e5f6a7-b8c9-0123-def0-234567890123\",\n      \"weightScore\": 2,\n      \"criteriaType\": \"age\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": 22,\n      \"maxAge\": 35,\n      \"gender\": null,\n      \"minSalary\": null,\n      \"maxSalary\": null\n    },\n    {\n      \"id\": \"e5f6a7b8-c9d0-1234-ef01-345678901234\",\n      \"weightScore\": 1,\n      \"criteriaType\": \"gender\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": null,\n      \"maxAge\": null,\n      \"gender\": \"any\",\n      \"minSalary\": null,\n      \"maxSalary\": null\n    },\n    {\n      \"id\": \"f6a7b8c9-d0e1-2345-f012-456789012345\",\n      \"weightScore\": 3,\n      \"criteriaType\": \"salary\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": null,\n      \"maxAge\": null,\n      \"gender\": null,\n      \"minSalary\": 5000000,\n      \"maxSalary\": 10000000\n    }\n  ],\n  \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n  \"updatedAt\": \"2026-06-06T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Vacancies",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/vacancies",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacancies"]
+            },
+            "description": "Retrieve all vacancies with their criteria, ordered by creation date (newest first).\n\n**Responses:**\n- `200 OK` — Array of vacancy objects with criteria"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/vacancies", "host": ["{{baseUrl}}"], "path": ["vacancies"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n    \"name\": \"Software Engineer\",\n    \"criteria\": [\n      {\n        \"id\": \"d4e5f6a7-b8c9-0123-def0-234567890123\",\n        \"weightScore\": 2,\n        \"criteriaType\": \"age\",\n        \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n        \"minAge\": 22,\n        \"maxAge\": 35,\n        \"gender\": null,\n        \"minSalary\": null,\n        \"maxSalary\": null\n      }\n    ],\n    \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n    \"updatedAt\": \"2026-06-06T08:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Vacancy by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/vacancies/{{vacancyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacancies", "{{vacancyId}}"]
+            },
+            "description": "Retrieve a single vacancy with its criteria by UUID.\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| id | UUID | Vacancy ID |\n\n**Responses:**\n- `200 OK` — Vacancy with criteria\n- `404 Not Found` — Vacancy not found"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/vacancies/{{vacancyId}}", "host": ["{{baseUrl}}"], "path": ["vacancies", "{{vacancyId}}"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n  \"name\": \"Software Engineer\",\n  \"criteria\": [\n    {\n      \"id\": \"d4e5f6a7-b8c9-0123-def0-234567890123\",\n      \"weightScore\": 2,\n      \"criteriaType\": \"age\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": 22,\n      \"maxAge\": 35,\n      \"gender\": null,\n      \"minSalary\": null,\n      \"maxSalary\": null\n    },\n    {\n      \"id\": \"e5f6a7b8-c9d0-1234-ef01-345678901234\",\n      \"weightScore\": 1,\n      \"criteriaType\": \"gender\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": null,\n      \"maxAge\": null,\n      \"gender\": \"any\",\n      \"minSalary\": null,\n      \"maxSalary\": null\n    },\n    {\n      \"id\": \"f6a7b8c9-d0e1-2345-f012-456789012345\",\n      \"weightScore\": 3,\n      \"criteriaType\": \"salary\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": null,\n      \"maxAge\": null,\n      \"gender\": null,\n      \"minSalary\": 5000000,\n      \"maxSalary\": 10000000\n    }\n  ],\n  \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n  \"updatedAt\": \"2026-06-06T08:00:00.000Z\"\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/vacancies/non-existent-id", "host": ["{{baseUrl}}"], "path": ["vacancies", "non-existent-id"] }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Vacancy not found\",\n  \"error\": \"Not Found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Vacancy",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vacancies/{{vacancyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacancies", "{{vacancyId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Senior Software Engineer\",\n  \"criteria\": [\n    {\n      \"type\": \"age\",\n      \"weightScore\": 3,\n      \"minAge\": 25,\n      \"maxAge\": 40\n    },\n    {\n      \"type\": \"salary\",\n      \"weightScore\": 2,\n      \"minSalary\": 8000000,\n      \"maxSalary\": 15000000\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update a vacancy. All fields are optional. If `criteria` is provided, all existing criteria are **replaced** entirely.\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| id | UUID | Vacancy ID |\n\n**Request Body** (all fields optional):\n| Field | Type | Notes |\n|-------|------|-------|\n| name | string | Vacancy title |\n| criteria | array | Replaces ALL existing criteria |\n\n**Responses:**\n- `200 OK` — Updated vacancy\n- `404 Not Found` — Vacancy not found"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/vacancies/{{vacancyId}}", "host": ["{{baseUrl}}"], "path": ["vacancies", "{{vacancyId}}"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Senior Software Engineer\",\n  \"criteria\": [\n    { \"type\": \"age\", \"weightScore\": 3, \"minAge\": 25, \"maxAge\": 40 },\n    { \"type\": \"salary\", \"weightScore\": 2, \"minSalary\": 8000000, \"maxSalary\": 15000000 }\n  ]\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n  \"name\": \"Senior Software Engineer\",\n  \"criteria\": [\n    {\n      \"id\": \"a7b8c9d0-e1f2-3456-0123-567890123456\",\n      \"weightScore\": 3,\n      \"criteriaType\": \"age\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": 25,\n      \"maxAge\": 40,\n      \"gender\": null,\n      \"minSalary\": null,\n      \"maxSalary\": null\n    },\n    {\n      \"id\": \"b8c9d0e1-f2a3-4567-1234-678901234567\",\n      \"weightScore\": 2,\n      \"criteriaType\": \"salary\",\n      \"vacancyId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n      \"minAge\": null,\n      \"maxAge\": null,\n      \"gender\": null,\n      \"minSalary\": 8000000,\n      \"maxSalary\": 15000000\n    }\n  ],\n  \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n  \"updatedAt\": \"2026-06-06T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Vacancy",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/vacancies/{{vacancyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacancies", "{{vacancyId}}"]
+            },
+            "description": "Delete a vacancy and all its associated criteria (cascade delete).\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| id | UUID | Vacancy ID |\n\n**Responses:**\n- `204 No Content` — Deleted successfully\n- `404 Not Found` — Vacancy not found"
+          },
+          "response": [
+            {
+              "name": "204 No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "url": { "raw": "{{baseUrl}}/vacancies/{{vacancyId}}", "host": ["{{baseUrl}}"], "path": ["vacancies", "{{vacancyId}}"] }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ranking",
+      "description": "Rank candidates against a vacancy using weighted criteria scoring.\n\n**Scoring Algorithm:**\n1. Each candidate is evaluated against all vacancy criteria\n2. If a criterion is satisfied, its `weightScore` is added to the candidate's total score\n3. Candidates are sorted by score (descending); ties are broken alphabetically by name\n4. Results are cached in Redis for 300 seconds (configurable via `REDIS_TTL`)\n\n**Criteria Evaluation:**\n- **Age** — Candidate's current age must be within [minAge, maxAge]\n- **Gender** — Candidate's gender must match (or criteria is `any`)\n- **Salary** — Candidate's currentSalary must be within [minSalary, maxSalary]",
+      "item": [
+        {
+          "name": "Get Candidate Rankings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/vacancies/{{vacancyId}}/ranking",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacancies", "{{vacancyId}}", "ranking"]
+            },
+            "description": "Rank all candidates for a specific vacancy using weighted criteria matching.\n\nResults are cached in Redis. To force a fresh calculation, call **Delete Ranking Cache** first.\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| vacancyId | UUID | Vacancy to rank candidates against |\n\n**Responses:**\n- `200 OK` — Ranked list of candidates with scores\n- `404 Not Found` — Vacancy not found"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/vacancies/{{vacancyId}}/ranking", "host": ["{{baseUrl}}"], "path": ["vacancies", "{{vacancyId}}", "ranking"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"rank\": 1,\n    \"score\": 6,\n    \"candidate\": {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"John Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"dateOfBirth\": \"1995-03-15T00:00:00.000Z\",\n      \"gender\": \"male\",\n      \"currentSalary\": 8000000,\n      \"createdAt\": \"2026-06-06T08:00:00.000Z\",\n      \"updatedAt\": \"2026-06-06T08:00:00.000Z\"\n    }\n  },\n  {\n    \"rank\": 2,\n    \"score\": 4,\n    \"candidate\": {\n      \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Jane Smith\",\n      \"email\": \"jane.smith@example.com\",\n      \"dateOfBirth\": \"1993-07-20T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"currentSalary\": 7500000,\n      \"createdAt\": \"2026-06-06T07:00:00.000Z\",\n      \"updatedAt\": \"2026-06-06T07:00:00.000Z\"\n    }\n  },\n  {\n    \"rank\": 3,\n    \"score\": 0,\n    \"candidate\": {\n      \"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789013\",\n      \"name\": \"Bob Lee\",\n      \"email\": \"bob.lee@example.com\",\n      \"dateOfBirth\": \"1980-01-10T00:00:00.000Z\",\n      \"gender\": \"male\",\n      \"currentSalary\": 20000000,\n      \"createdAt\": \"2026-06-06T06:00:00.000Z\",\n      \"updatedAt\": \"2026-06-06T06:00:00.000Z\"\n    }\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Delete Ranking Cache",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/vacancies/{{vacancyId}}/ranking/cache",
+              "host": ["{{baseUrl}}"],
+              "path": ["vacancies", "{{vacancyId}}", "ranking", "cache"]
+            },
+            "description": "Invalidate the Redis ranking cache for a specific vacancy. Use this after updating candidates or vacancy criteria to force a fresh ranking calculation on the next GET request.\n\n**Path Parameters:**\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| vacancyId | UUID | Vacancy whose cache to invalidate |\n\n**Responses:**\n- `200 OK` — Cache cleared"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "DELETE",
+                "url": { "raw": "{{baseUrl}}/vacancies/{{vacancyId}}/ranking/cache", "host": ["{{baseUrl}}"], "path": ["vacancies", "{{vacancyId}}", "ranking", "cache"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"message\": \"Cache invalidated successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

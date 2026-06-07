@@ -17,9 +17,6 @@ export class Criteria {
   @Column({ default: 1 })
   weightScore: number;
 
-  @Column({ name: 'criteria_type', nullable: true })
-  criteriaType: string;
-
   @ManyToOne(() => Vacancy, (vacancy) => vacancy.criteria, {
     onDelete: 'CASCADE',
   })
